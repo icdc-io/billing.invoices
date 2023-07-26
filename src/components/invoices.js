@@ -42,7 +42,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
     };
 
     const invoicesList = [...invoices].filter((item) => {
-        const searchString = search?.toLowerCase()
+        const searchString = search?.toLowerCase().trim()
         if (searchString === '') {
             return item;
         }
@@ -217,6 +217,9 @@ const Invoices = ({ t, isPayEnable, history }) => {
                     {invoicesListPage}
                 </Table.Body>
             </Table>
+            {search && invoicesList.length === 0 &&
+                <div className='empty-table'>{t('noSearchResults')}</div>
+            }
         </section>
         {selectedInvoice && <EditInvoice
             t={t}
@@ -224,15 +227,18 @@ const Invoices = ({ t, isPayEnable, history }) => {
             onCancel={onCancel}
             onSave={onSave}
             invoice={selectedInvoice}
-            isSaving={invoicesPutStatus === 'pending'} />}
-        <div className='pagination-wrapper'>
-            <Pagination
-                activePage={currentPage}
-                size='tiny'
-                onPageChange={handlePaginationChange}
-                totalPages={totalPages}
-            />
-        </div>
+            isSaving={invoicesPutStatus === 'pending'} />
+        }
+        {invoicesList.length > 9 &&
+            <div className='pagination-wrapper'>
+                <Pagination
+                    activePage={currentPage}
+                    size='tiny'
+                    onPageChange={handlePaginationChange}
+                    totalPages={totalPages}
+                />
+            </div>
+        }
     </div>
     );
 };
