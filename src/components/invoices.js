@@ -68,7 +68,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
     const handlePaginationChange = (e, { activePage }) => setCurrentPage(activePage)
 
     const onSearch = (e) => {
-        setCurrentPage(1);
+        e.currentTarget.value.trim() && setCurrentPage(1);
         setSearch(e.currentTarget.value)
     }
 
@@ -217,7 +217,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
                     {invoicesListPage}
                 </Table.Body>
             </Table>
-            {search && invoicesList.length === 0 &&
+            {search.trim() && invoicesList.length === 0 &&
                 <div className='empty-table'>{t('noSearchResults')}</div>
             }
         </section>
