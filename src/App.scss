@@ -157,3 +157,16 @@
     right: 8px;
   }
 }
+
+.pagination-wrapper{
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.empty-table {
+  text-align: center;
+  color: grey;
+  font-weight: 600;
+  margin: 20px 0;
+}
