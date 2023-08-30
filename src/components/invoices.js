@@ -145,7 +145,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
 
     const invoicesListPage =
         invoicesList
-            .filter((_, index) => index > firstInvoiceIndex)
+            .filter((_, index) => index >= firstInvoiceIndex)
             .filter((_, index) => index <= invoicesPerPage - 1)
             .map(invoice => (
                 <Table.Row key={invoice.id}>
