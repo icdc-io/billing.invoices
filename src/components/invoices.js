@@ -53,6 +53,9 @@ const Invoices = ({ t, isPayEnable, history }) => {
             || item.amount?.toString().toLowerCase().includes(searchString)
             || item.name?.toString().toLowerCase().includes(searchString)
             || item.number?.toString().toLowerCase().includes(searchString)
+            || item.due_date?.toString().toLowerCase().includes(searchString)
+            || item.payment_date?.toString().toLowerCase().includes(searchString)
+            || item.payment_method?.toString().toLowerCase().includes(searchString)
             || status?.toLowerCase().includes(searchString)
     }).sort((a, b) => {
         const date1 = Date.parse(a.payment_date);
@@ -142,7 +145,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
 
     const invoicesListPage =
         invoicesList
-            .filter((_, index) => index > firstInvoiceIndex)
+            .filter((_, index) => index >= firstInvoiceIndex)
             .filter((_, index) => index <= invoicesPerPage - 1)
             .map(invoice => (
                 <Table.Row key={invoice.id}>
