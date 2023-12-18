@@ -58,6 +58,12 @@
     color: #000000;
   }
 
+  .blockSearch{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
   i.grey.icon {
     margin-right: 20px;
   }

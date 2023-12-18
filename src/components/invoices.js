@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchInvoicesData, putInvoice } from '../AppActions';
 import { withRouter } from 'react-router-dom';
 import ErrorPage from './errorPage';
+import Filter from './filter'
 
 const Invoices = ({ t, isPayEnable, history }) => {
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
@@ -16,6 +17,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [invoicesPerPage, setInvoicesPerPage] = useState(10)
+    const [filters, setFilters] = useState([]);
 
     const invoices = useSelector(state => state.InvoicesStore.invoices);
     const invoicesFetchStatus = useSelector(state => state.InvoicesStore.invoicesFetchStatus);
@@ -57,7 +59,8 @@ const Invoices = ({ t, isPayEnable, history }) => {
             || item.payment_date?.toString().toLowerCase().includes(searchString)
             || item.payment_method?.toString().toLowerCase().includes(searchString)
             || status?.toLowerCase().includes(searchString)
-    }).sort((a, b) => {
+    }).filter((invoice) => filters?.length ? filters.includes(invoice.status) : true)
+    .sort((a, b) => {
         const date1 = Date.parse(a.payment_date);
         const date2 = Date.parse(b.payment_date);
         return date2 - date1;
@@ -207,17 +210,20 @@ const Invoices = ({ t, isPayEnable, history }) => {
     return (<div className={'container'}>
         <section className='billing'>
             <h3 className='blockTitle'>{t('invoices')}</h3>
-            <Input
-                icon='search'
-                iconPosition='left'
-                placeholder={t('searchField')}
-                style={{ width: '400px', margin: '0px 0px 0px 25px' }}
-                value={search}
-                onChange={onSearch}
-            />
+            <div className='blockSearch'>
+                <Input
+                    icon='search'
+                    iconPosition='left'
+                    placeholder={t('searchField')}
+                    style={{ width: '400px', margin: '0px 0px 0px 25px' }}
+                    value={search}
+                    onChange={onSearch}
+                />
+                <Filter t={t} onChange={setFilters} />
+            </div>
             <Table basic='very'>
                 <Table.Body>
-                    {invoicesListPage}
+                {invoicesListPage?.length ? invoicesListPage : <div className='empty-table'>{t('noSearchResults')}</div>}
                 </Table.Body>
             </Table>
             {search.trim() && invoicesList.length === 0 &&
