@@ -1,0 +1,76 @@
+import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { Checkbox, Dropdown } from 'semantic-ui-react';
+
+const Filter = ({ t, onChange }) => {
+  const [selection, setSelection] = useState([0]);
+
+  const filterCategories = [
+    { id: 0, title: "all", },
+    { id: 1, title: "unpaid", values: ["unpaid"] },
+    { id: 2, title: "paid", values: ["paid"] },
+    { id: 3, title: "other", values: ["post_due", "draft"] },
+  ];
+
+  useEffect(() => {
+
+    if (!selection?.length) {
+      setSelection([0]);
+    }
+
+    const filter = [];
+
+    if (selection.length) {
+      selection.forEach(x => {
+        const category = filterCategories.find(y => y.id === x);
+
+        if (category?.values?.length) {
+          filter.push(...category?.values);
+        }
+      });
+    }
+
+    onChange(filter);
+  }, [selection]);
+
+  const toggleSelection = (e, { label, checked, id }) => {
+
+    if (!id) {
+      setSelection([0]);
+      return;
+    }
+
+    if (!checked) {
+      const newSelection = selection.filter(el => el !== 0);
+      setSelection([...newSelection, id]);
+    } else {
+      setSelection(selection.filter(el => el !== id));
+    }
+  };
+
+  return (
+    <Dropdown
+      text='Filter'
+      icon='filter'
+      floating
+      labeled
+      button
+      className='icon'
+    >
+      <Dropdown.Menu>
+        {filterCategories.map(({ id, title }) => (
+          <Dropdown.Item key={id}>
+            <Checkbox label={t(title)} id={id} checked={selection.includes(id)} onMouseDown={toggleSelection} />
+          </Dropdown.Item>
+        ))}
+      </Dropdown.Menu>
+    </Dropdown>
+  );
+};
+
+Filter.propTypes = {
+  t: PropTypes.func,
+  onChange: PropTypes.func
+};
+
+export default Filter;
