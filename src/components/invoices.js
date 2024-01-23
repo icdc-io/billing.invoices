@@ -61,8 +61,8 @@ const Invoices = ({ t, isPayEnable, history }) => {
             || status?.toLowerCase().includes(searchString)
     }).filter((invoice) => filters?.length ? filters.includes(invoice.status) : true)
     .sort((a, b) => {
-        const date1 = Date.parse(a.payment_date);
-        const date2 = Date.parse(b.payment_date);
+        const date1 = Date.parse(a.due_date);
+        const date2 = Date.parse(b.due_date);
         return date2 - date1;
     });
 
