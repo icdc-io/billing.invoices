@@ -7,10 +7,10 @@ const Filter = ({ t, onChange }) => {
 
   const filterCategories = [
     { id: 0, title: "all", },
-    { id: 2, title: "paidInvoices", values: ["paid"] },
-    { id: 1, title: "unPaidInvoices", values: ["unpaid"] },
+    { id: 1, title: "paidInvoices", values: ["paid"] },
+    { id: 2, title: "unPaidInvoices", values: ["unpaid"] },
     { id: 3, title: "draftInvoices", values: ["draft"] },
-    { id: 3, title: "postDueInvoices", values: ["post_due"] },
+    { id: 4, title: "postDueInvoices", values: ["post_due"] },
   ];
 
   useEffect(() => {
