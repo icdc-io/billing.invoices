@@ -210,17 +210,15 @@ const Invoices = ({ t, isPayEnable, history }) => {
     return (<div className={'container'}>
         <section className='billing'>
             <h3 className='blockTitle'>{t('invoices')}</h3>
-            <div className='blockSearch'>
                 <Input
                     icon='search'
                     iconPosition='left'
                     placeholder={t('searchField')}
-                    style={{ width: '400px', margin: '0px 0px 0px 25px' }}
+                    style={{ width: '400px', margin: '0px 25px 0px 25px' }}
                     value={search}
                     onChange={onSearch}
                 />
                 <Filter t={t} onChange={setFilters} />
-            </div>
             <Table basic='very'>
                 <Table.Body>
                 {invoicesListPage?.length ? invoicesListPage : <div className='empty-table'>{t('noSearchResults')}</div>}

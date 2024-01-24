@@ -1,4 +1,4 @@
-const API_GATEWAY = process.env.API_GATEWAY || 'https://api-gw.icdc.d3.zby.icdc.io';
+const API_GATEWAY = process.env.API_GATEWAY || 'https://api.deu.lab.icdc.io';
 const BASE_URL = `${API_GATEWAY}/api`;
 
 export const INVOICES_FETCH = 'INVOICES_FETCH';
