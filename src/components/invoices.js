@@ -218,15 +218,12 @@ const Invoices = ({ t, isPayEnable, history }) => {
                     value={search}
                     onChange={onSearch}
                 />
-                <Filter t={t} onChange={setFilters} />
+                <Filter t={t} onChange={(data) => {setCurrentPage(1); setFilters(data)}} />
             <Table basic='very'>
                 <Table.Body>
                 {invoicesListPage?.length ? invoicesListPage : <div className='empty-table'>{t('noSearchResults')}</div>}
                 </Table.Body>
             </Table>
-            {search.trim() && invoicesList.length === 0 &&
-                <div className='empty-table'>{t('noSearchResults')}</div>
-            }
         </section>
         {selectedInvoice && <EditInvoice
             t={t}
