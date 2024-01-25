@@ -7,9 +7,10 @@ const Filter = ({ t, onChange }) => {
 
   const filterCategories = [
     { id: 0, title: "all", },
-    { id: 1, title: "unpaid", values: ["unpaid"] },
-    { id: 2, title: "paid", values: ["paid"] },
-    { id: 3, title: "other", values: ["post_due", "draft"] },
+    { id: 1, title: "paidInvoices", values: ["paid"] },
+    { id: 2, title: "unPaidInvoices", values: ["unpaid"] },
+    { id: 3, title: "draftInvoices", values: ["draft"] },
+    { id: 4, title: "postDueInvoices", values: ["post_due"] },
   ];
 
   useEffect(() => {
@@ -59,8 +60,14 @@ const Filter = ({ t, onChange }) => {
     >
       <Dropdown.Menu>
         {filterCategories.map(({ id, title }) => (
-          <Dropdown.Item key={id}>
-            <Checkbox label={t(title)} id={id} checked={selection.includes(id)} onMouseDown={toggleSelection} />
+          <Dropdown.Item key={id}  defaultValue={filterCategories[0]}>
+            <Checkbox
+              id={id}
+              label={t(title)}
+              checked={selection.includes(id)}
+              onMouseDown={toggleSelection} 
+              defaultValue={filterCategories[0]}
+              />
           </Dropdown.Item>
         ))}
       </Dropdown.Menu>
