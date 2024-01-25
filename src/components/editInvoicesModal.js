@@ -6,9 +6,13 @@ import './editSubscriptionModal.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import { useSelector } from 'react-redux';
+import { formatDateForRequest, isInvalidDate } from '../constants/toClientTimezone';
 
 const EditInvoice = ({ t, open, onSave, onCancel, invoice, isSaving }) => {
-    const [invoiceData, setInvoiceData] = useState({ ...invoice });
+    const [invoiceData, setInvoiceData] = useState({
+        ...invoice,
+        payment_date: isInvalidDate(invoice.payment_date) ? "" : new Date(invoice.payment_date)
+    });
     const { role } = useSelector(state => state.host.user);
     const locale = useSelector(state => state.host.lang);
 
@@ -35,15 +39,22 @@ const EditInvoice = ({ t, open, onSave, onCancel, invoice, isSaving }) => {
     };
 
     const onChangeDueDate = (data) => {
-        setInvoiceData({ ...invoiceData, ['due_date']: data ? formatDate(data) : '' });
+        setInvoiceData({ ...invoiceData, due_date: data ? formatDate(data) : '' });
     };
 
     const onChangePaymentDate = (data) => {
-        setInvoiceData({ ...invoiceData, ['payment_date']: data ? formatDate(data) : '' });
+        setInvoiceData({ ...invoiceData, payment_date: data || "" });
     };
 
     const clearPaymentDate = () => {
-        setInvoiceData({ ...invoiceData, ['payment_date']: '' });
+        setInvoiceData({ ...invoiceData, payment_date: '' });
+    };
+
+    const formatDataBeforeRequest = (data) => {
+        return {
+            ...data,
+            payment_date: formatDateForRequest(data.payment_date)
+        }
     };
 
     const statusOptions = [
@@ -82,7 +93,7 @@ const EditInvoice = ({ t, open, onSave, onCancel, invoice, isSaving }) => {
                     locale={locale}
                     onChange={onChangeDueDate}
                     minDate={role === 'admin' ? null : new Date()}
-                    dateFormat="yyyy-MM-dd"
+                    dateFormat={locale === 'en' ? "dd/MM/yyyy p" : "dd.MM.yyyy HH:mm"}
                     placeholderText={t('date')}
                     value={invoiceData.due_date} />
                 <label>{t('status')}</label>
@@ -111,10 +122,13 @@ const EditInvoice = ({ t, open, onSave, onCancel, invoice, isSaving }) => {
                         id='payment_date'
                         locale={locale}
                         onChange={onChangePaymentDate}
-                        dateFormat="yyyy-MM-dd"
-                        value={invoiceData.payment_date}
+                        selected={invoiceData.payment_date}
                         popperPlacement="top-start"
-                        placeholderText={t('date')} />
+                        placeholderText={t('date')}
+                        showTimeSelect
+                        timeFormat={locale === 'en' ? "p" : "HH:mm"}
+                        dateFormat={locale === 'en' ? "dd/MM/yyyy p" : "dd.MM.yyyy HH:mm"}
+                    />
                     <Icon name='delete' color='grey' onClick={clearPaymentDate} />
                 </div>
                 <div className='btns'>
@@ -124,7 +138,7 @@ const EditInvoice = ({ t, open, onSave, onCancel, invoice, isSaving }) => {
                             disabled={isSaving || !invoiceData.name}
                             color='blue'
                             content={t('save')}
-                            onClick={() => { onSave(invoiceData); }} />
+                            onClick={() => { onSave(formatDataBeforeRequest(invoiceData)); }} />
                     </Modal.Actions>
                 </div>
 

@@ -1,6 +1,7 @@
 /* eslint camelcase: 0 */
 import * as ActionTypes from './AppConstants';
 import Immutable from 'seamless-immutable';
+import { withClientTimezone } from './constants/toClientTimezone';
 
 // eslint-disable-next-line new-cap
 const initialState = Immutable({
@@ -15,7 +16,10 @@ export const InvoicesStore = (state = initialState, action) => {
             return state.set('invoicesFetchStatus', 'pending');
         case `${ActionTypes.INVOICES_FETCH}_FULFILLED`:
             return Immutable.merge(state, {
-                invoices: action.payload,
+                invoices: action.payload.map((invoice) => ({
+                    ...invoice,
+                    payment_date: withClientTimezone(invoice.payment_date)
+                })),
                 invoicesFetchStatus: 'fulfilled'
             });
         case `${ActionTypes.INVOICES_FETCH}_REJECTED`:

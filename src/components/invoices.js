@@ -10,19 +10,22 @@ import { fetchInvoicesData, putInvoice } from '../AppActions';
 import { withRouter } from 'react-router-dom';
 import ErrorPage from './errorPage';
 import Filter from './filter'
+import { isInvalidDate } from '../constants/toClientTimezone';
 
 const Invoices = ({ t, isPayEnable, history }) => {
+    const invoicesPerPage = 10;
+
     const [isOpenEditModal, setIsOpenEditModal] = useState(false);
     const [selectedInvoice, setSelectedInvoice] = useState(null);
     const [search, setSearch] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [invoicesPerPage, setInvoicesPerPage] = useState(10)
     const [filters, setFilters] = useState([]);
 
     const invoices = useSelector(state => state.InvoicesStore.invoices);
     const invoicesFetchStatus = useSelector(state => state.InvoicesStore.invoicesFetchStatus);
     const invoicesPutStatus = useSelector(state => state.InvoicesStore.invoicesPutStatus);
-    const { location, account } = useSelector(state => state.host.user);
+    const { location, account, role } = useSelector(state => state.host.user);
+    const lang = useSelector(state => state.host.lang);
 
     const dispatch = useDispatch();
 
@@ -87,7 +90,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
         account && dispatch(fetchInvoicesData());
     };
 
-    useEffect(updateGrid, [location, account]);
+    useEffect(updateGrid, [location, account, role]);
 
     const roundToTwo = (num) => {
         return +(Math.round(num + 'e+2') + 'e-2');
@@ -146,6 +149,20 @@ const Invoices = ({ t, isPayEnable, history }) => {
 
     const totalPages = calculatePagesCount();
 
+    const toLocaleDatetime = (datetime, withTime) => {
+        if (isInvalidDate(datetime)) return "";
+        const timeOptions = withTime ? {
+            hour: '2-digit',
+            minute: '2-digit',
+        } : {};
+        return new Date(datetime).toLocaleString(lang, {
+            ...timeOptions,
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+        });
+    };
+
     const invoicesListPage =
         invoicesList
             .filter((_, index) => index >= firstInvoiceIndex)
@@ -166,7 +183,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
                         <p className='titleTable'>{t('invoiceId')}</p>
                     </Table.Cell>
                     <Table.Cell>
-                        <p>{invoice.due_date}</p>
+                        <p>{toLocaleDatetime(invoice.due_date)}</p>
                         <p className='titleTable'>{t('dueTo')}</p>
                     </Table.Cell>
                     <Table.Cell>
@@ -178,7 +195,7 @@ const Invoices = ({ t, isPayEnable, history }) => {
                         <p className='titleTable'>{t('paymentMethod')}</p>
                     </Table.Cell>
                     <Table.Cell>
-                        <p>{invoice.payment_date}</p>
+                        <p>{toLocaleDatetime(invoice.payment_date, true)}</p>
                         <p className='titleTable'>{t('paymentDate')}</p>
                     </Table.Cell>
                     <Table.Cell>
