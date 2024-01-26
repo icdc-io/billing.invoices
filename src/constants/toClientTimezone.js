@@ -1,5 +1,3 @@
-const MILISECS_IN_MIN = 60 * 1000;
-
 export const isInvalidDate = (date) => isNaN(Date.parse(date));
 
 export const formatDateForRequest = (date) => {
@@ -8,6 +6,6 @@ export const formatDateForRequest = (date) => {
 
 export const withClientTimezone = (date) => {
   return isInvalidDate(date) ? "" :
-    new Date(Number(new Date(date)) - ((new Date().getTimezoneOffset()) * MILISECS_IN_MIN))
+    new Date(date)
     .toLocaleString("en-US", { hour12: false });
 };
