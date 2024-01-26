@@ -6,7 +6,7 @@ import './editSubscriptionModal.scss';
 import 'react-datepicker/dist/react-datepicker.css';
 import DatePicker from 'react-datepicker';
 import { useSelector } from 'react-redux';
-import { formatDateForRequest, isInvalidDate } from '../constants/toClientTimezone';
+import { isInvalidDate } from '../constants/toClientTimezone';
 
 const EditInvoice = ({ t, open, onSave, onCancel, invoice, isSaving }) => {
     const [invoiceData, setInvoiceData] = useState({
@@ -48,13 +48,6 @@ const EditInvoice = ({ t, open, onSave, onCancel, invoice, isSaving }) => {
 
     const clearPaymentDate = () => {
         setInvoiceData({ ...invoiceData, payment_date: '' });
-    };
-
-    const formatDataBeforeRequest = (data) => {
-        return {
-            ...data,
-            payment_date: formatDateForRequest(data.payment_date)
-        }
     };
 
     const statusOptions = [
@@ -138,10 +131,9 @@ const EditInvoice = ({ t, open, onSave, onCancel, invoice, isSaving }) => {
                             disabled={isSaving || !invoiceData.name}
                             color='blue'
                             content={t('save')}
-                            onClick={() => { onSave(formatDataBeforeRequest(invoiceData)); }} />
+                            onClick={() => { onSave(invoiceData); }} />
                     </Modal.Actions>
                 </div>
-
             </Modal.Content>
         </Modal>);
 };
