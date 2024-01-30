@@ -11,6 +11,7 @@ import { withRouter } from 'react-router-dom';
 import ErrorPage from './errorPage';
 import Filter from './filter'
 import { isInvalidDate } from '../constants/toClientTimezone';
+import { getCurrentAppropriateLang } from 'container/getCurrentAppropriateLang';
 
 const Invoices = ({ t, isPayEnable, history }) => {
     const invoicesPerPage = 10;
@@ -149,13 +150,15 @@ const Invoices = ({ t, isPayEnable, history }) => {
 
     const totalPages = calculatePagesCount();
 
+    const currentAppropriateLang = getCurrentAppropriateLang(lang);
+
     const toLocaleDatetime = (datetime, withTime) => {
         if (isInvalidDate(datetime)) return "";
         const timeOptions = withTime ? {
             hour: '2-digit',
             minute: '2-digit',
         } : {};
-        return new Date(datetime).toLocaleString(lang, {
+        return new Date(datetime).toLocaleString(currentAppropriateLang, {
             ...timeOptions,
             day: 'numeric',
             month: 'numeric',
