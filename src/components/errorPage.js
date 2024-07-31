@@ -1,20 +1,27 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Icon, Segment, Header } from 'semantic-ui-react';
+import React from "react";
+import PropTypes from "prop-types";
+import { Icon, Segment, Header } from "semantic-ui-react";
+import { useTranslation } from "react-i18next";
 
-const ErrorPage = ({ t, auth }) => <div className='general-container'>
-    <Segment placeholder className='error-content'>
+const ErrorPage = ({ auth }) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="general-container">
+      <Segment placeholder className="error-content">
         <Header icon>
-            <Icon name='exclamation triangle' size='huge' />
-            <h2>{t([auth ? 'denied' : 'error'])}</h2>
-            <h6>{t([auth ? 'noAccess' : 'errorDescription'])}</h6>
+          <Icon name="exclamation triangle" size="huge" />
+          <h2>{t([auth ? "denied" : "error"])}</h2>
+          <h6>{t([auth ? "noAccess" : "errorDescription"])}</h6>
         </Header>
-    </Segment>
-</div>;
+      </Segment>
+    </div>
+  );
+};
 
 ErrorPage.propTypes = {
-    t: PropTypes.func,
-    auth: PropTypes.bool
+  t: PropTypes.func,
+  auth: PropTypes.bool,
 };
 
 export default ErrorPage;

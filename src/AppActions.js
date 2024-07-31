@@ -1,41 +1,51 @@
-import * as ActionTypes from './AppConstants';
-import { fetchData, updateData } from 'container/Api';
-import cogoToast from 'cogo-toast';
+import * as ActionTypes from "./AppConstants";
+import { fetchData, updateData } from "container/Api";
+import { toast } from "sonner";
 
-const notificationOptions = { position: 'top-right' };
+const notificationOptions = { position: "top-right" };
 
 const errorNotification = (error) => {
-    cogoToast.error(ActionTypes.notificationMessages[localStorage.getItem('icdc-lang') || 'en'].errNotif + error, notificationOptions);
+  toast.error(
+    ActionTypes.notificationMessages[localStorage.getItem("icdc-lang") || "en"]
+      .errNotif + error,
+    notificationOptions,
+  );
 };
 
 const successNotification = () =>
-    cogoToast.success(ActionTypes.notificationMessages[localStorage.getItem('icdc-lang') || 'en'].sucEditNotif, notificationOptions);
+  toast.success(
+    ActionTypes.notificationMessages[localStorage.getItem("icdc-lang") || "en"]
+      .sucEditNotif,
+    notificationOptions,
+  );
 
-export const infoNotification = (msg) =>
-    cogoToast.info(msg, notificationOptions);
+export const infoNotification = (msg) => toast.info(msg, notificationOptions);
 
 const fetchInvoicesDataAction = () => ({
-    type: ActionTypes.INVOICES_FETCH,
-    payload: fetchData(ActionTypes.INVOICES_DATA_URL, 'accounts')
+  type: ActionTypes.INVOICES_FETCH,
+  payload: fetchData(ActionTypes.INVOICES_DATA_URL),
 });
 
 export const fetchInvoicesData = () => (dispatch) => {
-    dispatch({ type: `${ActionTypes.INVOICES_FETCH}_PENDING` });
-    const response = dispatch(fetchInvoicesDataAction());
-    response.catch(error => errorNotification(error.response?.statusText));
+  dispatch({ type: `${ActionTypes.INVOICES_FETCH}_PENDING` });
+  const response = dispatch(fetchInvoicesDataAction());
+  response.catch((error) => errorNotification(error.response?.statusText));
 };
 
 const putInvoiceAction = (invoice) => ({
-    type: ActionTypes.INVOICE_PUT,
-    payload: updateData(ActionTypes.invoicePutUrl(invoice.id), invoice, 'accounts')
+  type: ActionTypes.INVOICE_PUT,
+  payload: updateData(ActionTypes.invoicePutUrl(invoice.id), invoice),
 });
 
 export const putInvoice = (invoice) => (dispatch) => {
-    dispatch({ type: `${ActionTypes.INVOICE_PUT}_PENDING` });
+  dispatch({ type: `${ActionTypes.INVOICE_PUT}_PENDING` });
 
-    const response = dispatch(putInvoiceAction(invoice));
-    response.then(() => {
-        dispatch(fetchInvoicesData());
-        successNotification();
-    }, error => errorNotification(error.response?.statusText));
+  const response = dispatch(putInvoiceAction(invoice));
+  response.then(
+    () => {
+      dispatch(fetchInvoicesData());
+      successNotification();
+    },
+    (error) => errorNotification(error.response?.statusText),
+  );
 };

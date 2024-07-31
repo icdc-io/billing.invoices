@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import PropTypes from 'prop-types';
-import { Checkbox, Dropdown } from 'semantic-ui-react';
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
+import { Checkbox, Dropdown } from "semantic-ui-react";
+import { useTranslation } from "react-i18next";
 
-const Filter = ({ t, onChange }) => {
+const Filter = ({ onChange }) => {
+  const { t } = useTranslation();
   const [selection, setSelection] = useState([0]);
 
   const filterCategories = [
-    { id: 0, title: "all", },
+    { id: 0, title: "all" },
     { id: 1, title: "paidInvoices", values: ["paid"] },
     { id: 2, title: "unPaidInvoices", values: ["unpaid"] },
     { id: 3, title: "draftInvoices", values: ["draft"] },
@@ -14,7 +16,6 @@ const Filter = ({ t, onChange }) => {
   ];
 
   useEffect(() => {
-
     if (!selection?.length) {
       setSelection([0]);
     }
@@ -22,11 +23,11 @@ const Filter = ({ t, onChange }) => {
     const filter = [];
 
     if (selection.length) {
-      selection.forEach(x => {
-        const category = filterCategories.find(y => y.id === x);
+      selection.forEach((x) => {
+        const category = filterCategories.find((y) => y.id === x);
 
         if (category?.values?.length) {
-          filter.push(...category?.values);
+          filter.push(...category.values);
         }
       });
     }
@@ -34,40 +35,39 @@ const Filter = ({ t, onChange }) => {
     onChange(filter);
   }, [selection]);
 
-  const toggleSelection = (e, { label, checked, id }) => {
-
+  const toggleSelection = (e, { checked, id }) => {
     if (!id) {
       setSelection([0]);
       return;
     }
 
     if (!checked) {
-      const newSelection = selection.filter(el => el !== 0);
+      const newSelection = selection.filter((el) => el !== 0);
       setSelection([...newSelection, id]);
     } else {
-      setSelection(selection.filter(el => el !== id));
+      setSelection(selection.filter((el) => el !== id));
     }
   };
 
   return (
     <Dropdown
-      text='Filter'
-      icon='filter'
+      text="Filter"
+      icon="filter"
       floating
       labeled
       button
-      className='icon'
+      className="icon"
     >
       <Dropdown.Menu>
         {filterCategories.map(({ id, title }) => (
-          <Dropdown.Item key={id}  defaultValue={filterCategories[0]}>
+          <Dropdown.Item key={id} defaultValue={filterCategories[0]}>
             <Checkbox
               id={id}
               label={t(title)}
               checked={selection.includes(id)}
-              onMouseDown={toggleSelection} 
+              onMouseDown={toggleSelection}
               defaultValue={filterCategories[0]}
-              />
+            />
           </Dropdown.Item>
         ))}
       </Dropdown.Menu>
@@ -76,8 +76,7 @@ const Filter = ({ t, onChange }) => {
 };
 
 Filter.propTypes = {
-  t: PropTypes.func,
-  onChange: PropTypes.func
+  onChange: PropTypes.func,
 };
 
 export default Filter;

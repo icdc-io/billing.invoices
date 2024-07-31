@@ -58,8 +58,6 @@
     color: #000000;
   }
 
- 
-
   i.grey.icon {
     margin-right: 20px;
   }
@@ -113,16 +111,16 @@
     display: block !important;
   }
 
-  .react-datepicker__triangle{
+  .react-datepicker__triangle {
     left: -25px !important;
   }
-  
-  .react-datepicker__input-container{
+
+  .react-datepicker__input-container {
     input {
       outline: none;
     }
   }
-  
+
   .react-datepicker__input-container {
     input {
       border: 1px solid rgba(34, 36, 38, 0.15);
@@ -131,12 +129,13 @@
       padding: 10px 10px 10px 25px;
       width: 100%;
     }
-    
-    input:active,  input:hover{
+
+    input:active,
+    input:hover {
       border-color: rgba(124, 170, 202, 0.863) !important;
     }
   }
-  
+
   .react-datepicker__input-container::after {
     position: absolute;
     display: block;
@@ -160,7 +159,7 @@
   }
 }
 
-.pagination-wrapper{
+.pagination-wrapper {
   display: flex;
   justify-content: center;
   margin: 20px 0;
