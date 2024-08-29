@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Provider } from "react-redux";
 import { InvoicesStore } from "./AppReducer";
 import { Loader } from "semantic-ui-react";
 import PropTypes from "prop-types";
@@ -15,11 +14,7 @@ const Invoices = ({ store }) => {
     setIsLoaded(true);
   }, []);
 
-  return (
-    <Provider store={store}>
-      {isLoaded ? <InvoicesComponent /> : <Loader active inline="centered" />}
-    </Provider>
-  );
+  return isLoaded ? <InvoicesComponent /> : <Loader active inline="centered" />;
 };
 
 Invoices.propTypes = {
