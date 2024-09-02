@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { InvoicesStore } from "./AppReducer";
-import { Loader } from "semantic-ui-react";
 import PropTypes from "prop-types";
+import React, { useEffect, useState } from "react";
+import { Loader } from "semantic-ui-react";
+import { InvoicesStore } from "./AppReducer";
 import "./App.scss";
 
 const InvoicesComponent = React.lazy(() => import("./components/invoices"));

@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { Checkbox, Dropdown } from "semantic-ui-react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Checkbox, Dropdown } from "semantic-ui-react";
 
 const Filter = ({ onChange }) => {
   const { t } = useTranslation();

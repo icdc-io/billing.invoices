@@ -1,4 +1,4 @@
-export const isInvalidDate = (date) => isNaN(Date.parse(date));
+export const isInvalidDate = (date) => Number.isNaN(Date.parse(date));
 
 export const withClientTimezone = (date) => {
   return isInvalidDate(date)

@@ -1,6 +1,6 @@
-import * as ActionTypes from "./AppConstants";
 import { fetchData, updateData } from "container/Api";
 import { toast } from "sonner";
+import * as ActionTypes from "./AppConstants";
 
 const notificationOptions = { position: "top-right" };
 

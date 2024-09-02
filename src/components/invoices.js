@@ -1,17 +1,17 @@
+import { getCurrentAppropriateLang } from "container/getCurrentAppropriateLang";
+import PropTypes from "prop-types";
 /* eslint-disable new-cap */
 import React, { useState, useEffect } from "react";
-import * as ActionTypes from "../AppConstants";
-import PropTypes from "prop-types";
-import { PaymentStatuses } from "./enumeration";
-import { Icon, Input, Loader, Pagination, Table } from "semantic-ui-react";
-import EditInvoice from "./editInvoicesModal";
+import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
+import { Icon, Input, Loader, Pagination, Table } from "semantic-ui-react";
 import { fetchInvoicesData, putInvoice } from "../AppActions";
+import * as ActionTypes from "../AppConstants";
+import { isInvalidDate } from "../constants/toClientTimezone";
+import EditInvoice from "./editInvoicesModal";
+import { PaymentStatuses } from "./enumeration";
 import ErrorPage from "./errorPage";
 import Filter from "./filter";
-import { isInvalidDate } from "../constants/toClientTimezone";
-import { getCurrentAppropriateLang } from "container/getCurrentAppropriateLang";
-import { useTranslation } from "react-i18next";
 
 const Invoices = ({ isPayEnable }) => {
   const { t } = useTranslation();

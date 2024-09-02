@@ -1,20 +1,20 @@
-import React, { useState } from "react";
 import PropTypes from "prop-types";
+import React, { useState } from "react";
 import {
-  Modal,
   Button,
-  Input,
   Dropdown,
   Header,
   Icon,
+  Input,
+  Modal,
 } from "semantic-ui-react";
 import { PaymentStatuses } from "./enumeration";
 import "./editSubscriptionModal.scss";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
+import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { isInvalidDate } from "../constants/toClientTimezone";
-import { useTranslation } from "react-i18next";
 
 const EditInvoice = ({ open, onSave, onCancel, invoice, isSaving }) => {
   const { t } = useTranslation();
@@ -34,7 +34,7 @@ const EditInvoice = ({ open, onSave, onCancel, invoice, isSaving }) => {
 
     let month = "" + (date.getMonth() + 1);
     let day = "" + date.getDate();
-    let year = date.getFullYear();
+    const year = date.getFullYear();
 
     if (month.length < 2) {
       month = "0" + month;
@@ -89,7 +89,7 @@ const EditInvoice = ({ open, onSave, onCancel, invoice, isSaving }) => {
   return (
     <Modal size="tiny" open={open} className="billing-modal">
       <Modal.Content>
-        <div className="close-btn" onClick={onCancel}></div>
+        <div className="close-btn" onClick={onCancel} />
         <Header
           as="h2"
           style={{ margin: "auto 0 26px 0" }}
