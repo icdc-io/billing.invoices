@@ -1,5 +1,5 @@
-const API_GATEWAY = process.env.API_GATEWAY;
-const BASE_URL = `${API_GATEWAY}/api`;
+const REACT_APP_API_GATEWAY = process.env.REACT_APP_API_GATEWAY;
+const BASE_URL = `${REACT_APP_API_GATEWAY}/api`;
 
 export const INVOICES_FETCH = "INVOICES_FETCH";
 export const INVOICES_DATA_URL = `${BASE_URL}/accounts/v1/service_provider/invoices`;
