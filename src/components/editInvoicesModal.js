@@ -9,7 +9,6 @@ import {
   Modal,
 } from "semantic-ui-react";
 import { PaymentStatuses } from "./enumeration";
-import "./editSubscriptionModal.scss";
 import "react-datepicker/dist/react-datepicker.css";
 import DatePicker from "react-datepicker";
 import { useTranslation } from "react-i18next";
@@ -87,7 +86,7 @@ const EditInvoice = ({ open, onSave, onCancel, invoice, isSaving }) => {
   ];
 
   return (
-    <Modal size="tiny" open={open} className="billing-modal">
+    <Modal size="tiny" open={open} className="billing_invoices_modal">
       <Modal.Content>
         <div className="close-btn" onClick={onCancel} />
         <Header

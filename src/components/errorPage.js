@@ -7,7 +7,7 @@ const ErrorPage = ({ auth }) => {
   const { t } = useTranslation();
 
   return (
-    <div className="general-container">
+    <div>
       <Segment placeholder className="error-content">
         <Header icon>
           <Icon name="exclamation triangle" size="huge" />

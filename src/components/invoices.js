@@ -261,7 +261,7 @@ const Invoices = ({ isPayEnable }) => {
   }
 
   return (
-    <div className={"container"}>
+    <div className={"billing_invoices"}>
       <section className="billing">
         <h3 className="blockTitle">{t("invoices")}</h3>
         <Input
