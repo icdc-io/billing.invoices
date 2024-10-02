@@ -27,15 +27,6 @@ export const InvoicesStore = (state = initialState, action) => {
 
     case `${ActionTypes.INVOICE_PUT}_PENDING`:
       return state.set("invoicesPutStatus", "pending");
-    case `${ActionTypes.INVOICE_PUT}_FULFILLED`: {
-      const index = state.invoices.findIndex((x) => x.id === action.payload.id);
-      const newState = [...state.invoices];
-      newState[index] = action.payload;
-      return Immutable.merge(state, {
-        invoices: newState,
-        invoicesPutStatus: "fulfilled",
-      });
-    }
 
     case `${ActionTypes.INVOICE_PUT}_REJECTED`:
       return state.set("invoicesPutStatus", "rejected");

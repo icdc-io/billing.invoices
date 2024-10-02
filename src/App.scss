@@ -90,6 +90,21 @@
 .billing_invoices_modal {
   color: #000000;
 
+  .react-datepicker-wrapper {
+    width: 100%;
+  }
+
+  .paymentDateWrapper {
+    position: relative;
+  }
+
+  i.grey.icon {
+    cursor: pointer;
+    position: absolute;
+    right: 8px;
+    top: 10px;
+  }
+
   label {
     display: block;
     margin: 12px 0 12px 0;
