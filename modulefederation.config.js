@@ -1,38 +1,29 @@
 const { dependencies } = require("./package.json");
 
-const isEnvProduction = process.env.NODE_ENV === "production";
-
 module.exports = {
-  name: "billing_invoices",
-  filename: "remoteEntry.js",
-  exposes: {
-    "./invoices": "./src/invoices.jsx",
-  },
-  remotes: {
-    container: isEnvProduction
-      ? `host@${process.env.REACT_APP_GENERAL_HOST}/general.js`
-      : "host@http://localhost:8000/general.js",
-  },
-  shared: {
-    react: {
-      singleton: true, // true - load this module once
-      strictVersion: true, // only necessary version
-      requiredVersion: dependencies.react, // define required module version
-    },
-    "react-router-dom": {
-      singleton: true,
-      strictVersion: true,
-      requiredVersion: dependencies["react-router-dom"],
-    },
-    "react-i18next": {
-      singleton: true,
-      strictVersion: true,
-      requiredVersion: dependencies["react-i18next"],
-    },
-    sonner: {
-      singleton: true,
-      strictVersion: true,
-      requiredVersion: dependencies.sonner,
-    },
-  },
+	name: "billing_invoices",
+	filename: "remoteEntry.js",
+	exposes: {
+		"./invoices": "./src/invoices.jsx",
+	},
+	remotes: {
+		container: "host@/general.js",
+	},
+	shared: {
+		react: {
+			singleton: true, // true - load this module once
+			strictVersion: true, // only necessary version
+			requiredVersion: dependencies.react, // define required module version
+		},
+		"react-router-dom": {
+			singleton: true,
+			strictVersion: true,
+			requiredVersion: dependencies["react-router-dom"],
+		},
+		"react-i18next": {
+			singleton: true,
+			strictVersion: true,
+			requiredVersion: dependencies["react-i18next"],
+		},
+	},
 };

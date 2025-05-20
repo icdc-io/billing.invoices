@@ -1,318 +1,368 @@
+import ErrorScreen from "container/ErrorScreen";
+import { Input } from "container/Input";
+import Loader from "container/Loader";
+import Paginator from "container/Paginator";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "container/Select";
+import { Table, TableBody, TableCell, TableRow } from "container/Table";
 import { getCurrentAppropriateLang } from "container/getCurrentAppropriateLang";
-import PropTypes from "prop-types";
-/* eslint-disable new-cap */
+import { Pen } from "lucide-react";
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Icon, Input, Loader, Pagination, Table } from "semantic-ui-react";
 import { fetchInvoicesData, putInvoice } from "../AppActions";
 import * as ActionTypes from "../AppConstants";
 import { isInvalidDate } from "../constants/toClientTimezone";
+import { debounce } from "../utils/debounce";
 import EditInvoice from "./editInvoicesModal";
 import { PaymentStatuses } from "./enumeration";
-import ErrorPage from "./errorPage";
-import Filter from "./filter";
+
+const debouncedFetchInvoices = debounce((dispatch, params) => {
+	dispatch(fetchInvoicesData(params));
+}, 1000);
+
+const DEFAULT_PER_PAGE = 10;
 
 const Invoices = ({ isPayEnable }) => {
-  const { t } = useTranslation();
-  const invoicesPerPage = 10;
+	const { t } = useTranslation();
 
-  const [isOpenEditModal, setIsOpenEditModal] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState(null);
-  const [search, setSearch] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
-  const [filters, setFilters] = useState([]);
+	const [isOpenEditModal, setIsOpenEditModal] = useState(false);
+	const [selectedInvoice, setSelectedInvoice] = useState(null);
+	const [search, setSearch] = useState("");
+	const [currentPage, setCurrentPage] = useState(1);
+	const [filterByStatus, setFilterByStatus] = useState(0);
 
-  const invoices = useSelector((state) => state.InvoicesStore.invoices);
-  const invoicesFetchStatus = useSelector(
-    (state) => state.InvoicesStore.invoicesFetchStatus,
-  );
-  const invoicesPutStatus = useSelector(
-    (state) => state.InvoicesStore.invoicesPutStatus,
-  );
-  const { location, account, role } = useSelector((state) => state.host.user);
-  const lang = useSelector((state) => state.host.lang);
+	const invoices = useSelector((state) => state.InvoicesStore.invoices);
+	const invoicesTotalCount = useSelector(
+		(state) => state.InvoicesStore.invoicesTotalCount,
+	);
+	const invoicesFetchStatus = useSelector(
+		(state) => state.InvoicesStore.invoicesFetchStatus,
+	);
+	const invoicesPutStatus = useSelector(
+		(state) => state.InvoicesStore.invoicesPutStatus,
+	);
+	const { location, account, role } = useSelector((state) => state.host.user);
+	const lang = useSelector((state) => state.host.lang);
 
-  const dispatch = useDispatch();
+	const dispatch = useDispatch();
 
-  const getPaidStatusMessage = (status) => {
-    switch (status) {
-      case PaymentStatuses.Unpaid:
-        return t("unpaid");
-      case PaymentStatuses.Paid:
-        return t("paid");
-      case PaymentStatuses.PostDue:
-        return t("postDue");
-      case PaymentStatuses.Draft:
-        return t("draft");
-      default:
-        return "";
-    }
-  };
+	const statusFilters = [
+		{ title: "all", value: 0 },
+		{ title: "paidInvoices", value: PaymentStatuses.Paid },
+		{ title: "unPaidInvoices", value: PaymentStatuses.Unpaid },
+		{ title: "draftInvoices", value: PaymentStatuses.Draft },
+		{ title: "postDueInvoices", value: PaymentStatuses.PostDue },
+	];
 
-  const invoicesList = [...invoices]
-    .filter((item) => {
-      const searchString = search?.toLowerCase().trim();
-      if (searchString === "") {
-        return item;
-      }
+	const getPaidStatusMessage = (status) => {
+		switch (status) {
+			case PaymentStatuses.Unpaid:
+				return t("unpaid");
+			case PaymentStatuses.Paid:
+				return t("paid");
+			case PaymentStatuses.PostDue:
+				return t("postDue");
+			case PaymentStatuses.Draft:
+				return t("draft");
+			default:
+				return "";
+		}
+	};
 
-      const status = getPaidStatusMessage(item.status);
+	function buildQueryParams(params) {
+		const query = [
+			`page[limit]=${params.pageLimit}`,
+			`page[offset]=${params.pageOffset}`,
+			"sort=-due_date",
+		];
+		const searchString = params.search.trim();
 
-      return (
-        item.account?.toString().toLowerCase().includes(searchString) ||
-        item.amount?.toString().toLowerCase().includes(searchString) ||
-        item.name?.toString().toLowerCase().includes(searchString) ||
-        item.number?.toString().toLowerCase().includes(searchString) ||
-        item.due_date?.toString().toLowerCase().includes(searchString) ||
-        item.payment_date?.toString().toLowerCase().includes(searchString) ||
-        item.payment_method?.toString().toLowerCase().includes(searchString) ||
-        status?.toLowerCase().includes(searchString)
-      );
-    })
-    .filter((invoice) =>
-      filters?.length ? filters.includes(invoice.status) : true,
-    )
-    .sort((a, b) => {
-      const date1 = Date.parse(a.due_date);
-      const date2 = Date.parse(b.due_date);
-      return date2 - date1;
-    });
+		if (searchString) {
+			query.push(`filter[search]=${searchString}`);
+		}
 
-  const calculatePagesCount = () => {
-    const totalCount = invoicesList.length;
-    return totalCount < invoicesPerPage
-      ? 1
-      : Math.ceil(totalCount / invoicesPerPage);
-  };
+		if (params.filter) {
+			query.push(`filter[status]=${params.filter}`);
+		}
 
-  const handlePaginationChange = (e, { activePage }) =>
-    setCurrentPage(activePage);
+		return `?${query.join("&")}`;
+	}
 
-  const onSearch = (e) => {
-    e.currentTarget.value.trim() && setCurrentPage(1);
-    setSearch(e.currentTarget.value);
-  };
+	const handlePaginationChange = (activePage) => setCurrentPage(activePage);
 
-  const openEditInvoiceModal = (invoice) => {
-    setSelectedInvoice(invoice);
-    setIsOpenEditModal(true);
-  };
+	const handleInputSearch = (e) => {
+		const value = e.currentTarget.value;
+		value.trim() && setCurrentPage(1);
+		setSearch(value);
 
-  const updateGrid = () => {
-    account && dispatch(fetchInvoicesData());
-  };
+		debouncedFetchInvoices(
+			dispatch,
+			buildQueryParams({
+				pageOffset: currentPage,
+				pageLimit: DEFAULT_PER_PAGE,
+				search: value,
+				filter: filterByStatus,
+			}),
+		);
+	};
 
-  useEffect(updateGrid, [location, account, role]);
+	const statusesOptions = statusFilters.map((el, i) => ({
+		key: i,
+		value: el.value,
+		text: t(el.title),
+	}));
 
-  const roundToTwo = (num) => {
-    return +(Math.round(num + "e+2") + "e-2");
-  };
+	const openEditInvoiceModal = (invoice) => {
+		setSelectedInvoice(invoice);
+		setIsOpenEditModal(true);
+	};
 
-  const setCurrency = (currency, amount) => {
-    const roundedAmount = roundToTwo(amount);
-    switch (currency.toUpperCase()) {
-      case "USD":
-        return <span>&#36; {roundedAmount}</span>;
-      case "RUB":
-        return <span>&#8381; {roundedAmount}</span>;
-      case "PLN":
-        return <span>&#x142; {roundedAmount}</span>;
-      case "EUR":
-        return <span>&#8364; {roundedAmount}</span>;
-      case "BGN":
-        return <span>&#8364; {roundedAmount}</span>;
-      case "GBP":
-        return <span>&#163; {roundedAmount}</span>;
-      case "UAH":
-        return <span>&#8372; {roundedAmount}</span>;
-      case "CZK":
-        return <span>K&#x10D; {roundedAmount}</span>;
-      default:
-        return (
-          <span>
-            {roundedAmount} {currency.toUpperCase()}
-          </span>
-        );
-    }
-  };
+	useEffect(() => {
+		account &&
+			dispatch(
+				fetchInvoicesData(
+					buildQueryParams({
+						pageOffset: currentPage,
+						pageLimit: DEFAULT_PER_PAGE,
+						search,
+						filter: filterByStatus,
+					}),
+				),
+			);
+	}, [location, account, role, filterByStatus, currentPage]);
 
-  const onCancel = () => {
-    setIsOpenEditModal(false);
-    setSelectedInvoice(null);
-  };
+	const roundToTwo = (num) => {
+		return +(Math.round(num + "e+2") + "e-2");
+	};
 
-  const onSave = (invoice) => {
-    dispatch(putInvoice(invoice));
-    setIsOpenEditModal(false);
-    setSelectedInvoice(null);
-  };
+	const setCurrency = (currency, amount) => {
+		const roundedAmount = roundToTwo(amount);
+		switch (currency.toUpperCase()) {
+			case "USD":
+				return <span>&#36; {roundedAmount}</span>;
+			case "RUB":
+				return <span>&#8381; {roundedAmount}</span>;
+			case "PLN":
+				return <span>&#x142; {roundedAmount}</span>;
+			case "EUR":
+				return <span>&#8364; {roundedAmount}</span>;
+			case "BGN":
+				return <span>&#8364; {roundedAmount}</span>;
+			case "GBP":
+				return <span>&#163; {roundedAmount}</span>;
+			case "UAH":
+				return <span>&#8372; {roundedAmount}</span>;
+			case "CZK":
+				return <span>K&#x10D; {roundedAmount}</span>;
+			default:
+				return (
+					<span>
+						{roundedAmount} {currency.toUpperCase()}
+					</span>
+				);
+		}
+	};
 
-  const getPaidStatusClass = (status) => {
-    switch (status) {
-      case PaymentStatuses.Unpaid:
-        return "unpaid";
-      case PaymentStatuses.Paid:
-        return "paid";
-      case PaymentStatuses.PostDue:
-        return "post_due";
-      default:
-        return "";
-    }
-  };
+	const onCancel = () => {
+		setIsOpenEditModal(false);
+		setSelectedInvoice(null);
+	};
 
-  const lastInvoiceIndex = currentPage * invoicesPerPage;
-  const firstInvoiceIndex = lastInvoiceIndex - invoicesPerPage;
+	const onSave = (invoice) => {
+		dispatch(
+			putInvoice(
+				invoice,
+				buildQueryParams({
+					pageOffset: currentPage,
+					pageLimit: DEFAULT_PER_PAGE,
+					search,
+					filter: filterByStatus,
+				}),
+			),
+		);
+		setIsOpenEditModal(false);
+		setSelectedInvoice(null);
+	};
 
-  const totalPages = calculatePagesCount();
+	const getPaidStatusClass = (status) => {
+		switch (status) {
+			case PaymentStatuses.Unpaid:
+				return "unpaid";
+			case PaymentStatuses.Paid:
+				return "paid";
+			case PaymentStatuses.PostDue:
+				return "post_due";
+			default:
+				return "";
+		}
+	};
 
-  const currentAppropriateLang = getCurrentAppropriateLang(lang);
+	const currentAppropriateLang = getCurrentAppropriateLang(lang);
 
-  const toLocaleDatetime = (datetime, withTime) => {
-    if (isInvalidDate(datetime)) return "";
-    const timeOptions = withTime
-      ? {
-          hour: "2-digit",
-          minute: "2-digit",
-        }
-      : {};
-    return new Date(datetime).toLocaleString(currentAppropriateLang, {
-      ...timeOptions,
-      day: "numeric",
-      month: "numeric",
-      year: "numeric",
-    });
-  };
+	const toLocaleDatetime = (datetime, withTime) => {
+		if (isInvalidDate(datetime)) return "";
+		const timeOptions = withTime
+			? {
+					hour: "2-digit",
+					minute: "2-digit",
+				}
+			: {};
+		return new Date(datetime).toLocaleString(currentAppropriateLang, {
+			...timeOptions,
+			day: "numeric",
+			month: "numeric",
+			year: "numeric",
+		});
+	};
 
-  const invoicesListPage = invoicesList
-    .filter((_, index) => index >= firstInvoiceIndex)
-    .filter((_, index) => index <= invoicesPerPage - 1)
-    .map((invoice) => (
-      <Table.Row key={invoice.id}>
-        <Table.Cell className="nameInvoice firstColumnCell">
-          <a
-            href={ActionTypes.INVOICES_ITEM_FETCH_URL_PDF(invoice.id)}
-            target={"_blank"}
-            rel="noopener noreferrer"
-          >
-            {invoice.name}
-          </a>
-        </Table.Cell>
-        {!isPayEnable && (
-          <Table.Cell>
-            <p>{invoice.account}</p>
-            <p className="titleTable">{t("account")}</p>
-          </Table.Cell>
-        )}
-        <Table.Cell>
-          <p>{invoice.number}</p>
-          <p className="titleTable">{t("invoiceId")}</p>
-        </Table.Cell>
-        <Table.Cell>
-          <p>{toLocaleDatetime(invoice.due_date)}</p>
-          <p className="titleTable">{t("dueTo")}</p>
-        </Table.Cell>
-        <Table.Cell>
-          <p className={getPaidStatusClass(invoice.status)}>
-            {getPaidStatusMessage(invoice.status)}
-          </p>
-          <p className="titleTable">{t("status")}</p>
-        </Table.Cell>
-        <Table.Cell>
-          <p>{invoice.payment_method || "-"}</p>
-          <p className="titleTable">{t("paymentMethod")}</p>
-        </Table.Cell>
-        <Table.Cell>
-          <p>{toLocaleDatetime(invoice.payment_date, true)}</p>
-          <p className="titleTable">{t("paymentDate")}</p>
-        </Table.Cell>
-        <Table.Cell>
-          <p>{setCurrency(invoice.currency, invoice.amount)}</p>
-          <p className="titleTable">{t("total")}</p>
-        </Table.Cell>
-        <Table.Cell>
-          {isPayEnable ? (
-            invoice.status === PaymentStatuses.PostDue && (
-              <input
-                className="btn btn-blue"
-                type="button"
-                value={t("payNow")}
-              />
-            )
-          ) : (
-            <Icon
-              color="grey"
-              name="pencil alternate"
-              onClick={() => {
-                openEditInvoiceModal(invoice);
-              }}
-            />
-          )}
-        </Table.Cell>
-      </Table.Row>
-    ));
+	const invoicesListPage = invoices.map((invoice) => (
+		<TableRow key={invoice.id}>
+			<TableCell className="nameInvoice firstColumnCell">
+				<a
+					href={ActionTypes.INVOICES_ITEM_FETCH_URL_PDF(invoice.id)}
+					target={"_blank"}
+					rel="noopener noreferrer"
+				>
+					{invoice.name}
+				</a>
+			</TableCell>
+			{!isPayEnable && (
+				<TableCell>
+					<p>{invoice.account}</p>
+					<p className="titleTable">{t("account")}</p>
+				</TableCell>
+			)}
+			<TableCell>
+				<p>{invoice.number}</p>
+				<p className="titleTable">{t("invoiceId")}</p>
+			</TableCell>
+			<TableCell>
+				<p>{toLocaleDatetime(invoice.due_date)}</p>
+				<p className="titleTable">{t("dueTo")}</p>
+			</TableCell>
+			<TableCell>
+				<p className={getPaidStatusClass(invoice.status)}>
+					{getPaidStatusMessage(invoice.status)}
+				</p>
+				<p className="titleTable">{t("status")}</p>
+			</TableCell>
+			<TableCell>
+				<p>{invoice.payment_method || "-"}</p>
+				<p className="titleTable">{t("paymentMethod")}</p>
+			</TableCell>
+			<TableCell>
+				<p>{toLocaleDatetime(invoice.payment_date, true) || "-"}</p>
+				<p className="titleTable">{t("paymentDate")}</p>
+			</TableCell>
+			<TableCell>
+				<p>{setCurrency(invoice.currency, invoice.amount)}</p>
+				<p className="titleTable">{t("total")}</p>
+			</TableCell>
+			<TableCell>
+				{isPayEnable ? (
+					invoice.status === PaymentStatuses.PostDue && (
+						<input className="btn btn-blue" type="button" value={t("payNow")} />
+					)
+				) : (
+					<button
+						type="button"
+						onClick={() => {
+							openEditInvoiceModal(invoice);
+						}}
+					>
+						<Pen size={16} />
+					</button>
+				)}
+			</TableCell>
+		</TableRow>
+	));
 
-  if (invoicesFetchStatus === "rejected") {
-    return <ErrorPage />;
-  }
+	if (invoicesFetchStatus === "rejected") {
+		return <ErrorScreen />;
+	}
 
-  if (invoicesFetchStatus === "pending") {
-    return <Loader active inline="centered" />;
-  }
+	const handleFiltersChange = (value) => {
+		setCurrentPage(1);
+		setFilterByStatus(value);
+	};
 
-  return (
-    <div className={"billing_invoices"}>
-      <section className="billing">
-        <h3 className="blockTitle">{t("invoices")}</h3>
-        <Input
-          icon="search"
-          iconPosition="left"
-          placeholder={t("searchField")}
-          style={{ width: "400px", margin: "0px 25px 0px 25px" }}
-          value={search}
-          onChange={onSearch}
-        />
-        <Filter
-          onChange={(data) => {
-            setCurrentPage(1);
-            setFilters(data);
-          }}
-        />
-        <Table basic="very">
-          <Table.Body>
-            {invoicesListPage?.length ? (
-              invoicesListPage
-            ) : (
-              <div className="empty-table">{t("noSearchResults")}</div>
-            )}
-          </Table.Body>
-        </Table>
-      </section>
-      {selectedInvoice && (
-        <EditInvoice
-          open={isOpenEditModal}
-          onCancel={onCancel}
-          onSave={onSave}
-          invoice={selectedInvoice}
-          isSaving={invoicesPutStatus === "pending"}
-        />
-      )}
-      {invoicesList.length > 9 && (
-        <div className="pagination-wrapper">
-          <Pagination
-            activePage={currentPage}
-            size="tiny"
-            onPageChange={handlePaginationChange}
-            totalPages={totalPages}
-          />
-        </div>
-      )}
-    </div>
-  );
-};
+	return (
+		<div className={"billing_invoices h-full"}>
+			<section className="billing h-full flex flex-col">
+				<h3 className="blockTitle">{t("invoices")}</h3>
+				<div className="flex flex-wrap gap-2 items-center">
+					<div className="small-input">
+						<Input
+							variant="search"
+							placeholder={t("searchField")}
+							value={search}
+							onChange={handleInputSearch}
+						/>
+					</div>
+					<div>
+						<Select
+							defaultValue={filterByStatus}
+							onValueChange={handleFiltersChange}
+						>
+							<SelectTrigger>
+								<SelectValue placeholder={t("all")} />
+							</SelectTrigger>
+							<SelectContent>
+								{statusesOptions.map((item) => (
+									<SelectItem key={item.value} value={item.value}>
+										{item.text}
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+				</div>
+				<br />
+				{/* //todo - for future use(multiple filters)<Filter t={t} onChange={handleFiltersChange} /> */}
 
-Invoices.propTypes = {
-  isPayEnable: PropTypes.bool,
+				<div className="min-h-table">
+					{invoicesFetchStatus === "pending" ? (
+						<Loader className="m-auto" />
+					) : (
+						<Table>
+							<TableBody>
+								{invoices.length > 0 ? (
+									invoicesListPage
+								) : (
+									<div className="empty-table">{t("noSearchResults")}</div>
+								)}
+							</TableBody>
+						</Table>
+					)}
+				</div>
+				{invoicesTotalCount > 9 && (
+					<div className="pagination-wrapper">
+						<Paginator
+							currentPage={currentPage}
+							onPageChange={handlePaginationChange}
+							totalPages={Math.ceil(invoicesTotalCount / DEFAULT_PER_PAGE)}
+						/>
+					</div>
+				)}
+			</section>
+			{selectedInvoice && (
+				<EditInvoice
+					t={t}
+					open={isOpenEditModal}
+					onCancel={onCancel}
+					onSave={onSave}
+					invoice={selectedInvoice}
+					isSaving={invoicesPutStatus === "pending"}
+				/>
+			)}
+		</div>
+	);
 };
 
 export default Invoices;
