@@ -38,6 +38,8 @@ const EditInvoice = ({ open, onSave, onCancel, invoice, isSaving }) => {
 	const { role } = useSelector((state) => state.host.user);
 	const locale = useSelector((state) => state.host.lang);
 
+	console.log(isSaving);
+
 	const formatDate = (date) => {
 		if (!date) {
 			return null;

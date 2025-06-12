@@ -33,6 +33,8 @@ export const InvoicesStore = (state = initialState, action) => {
 		case `${ActionTypes.INVOICE_PUT}_REJECTED`:
 			return state.set("invoicesPutStatus", "rejected");
 
+		case `${ActionTypes.INVOICE_PUT}_FULFILLED`:
+			return state.set("invoicesPutStatus", "fulfilled");
 		default:
 			return state;
 	}

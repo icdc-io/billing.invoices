@@ -353,7 +353,6 @@ const Invoices = ({ isPayEnable }) => {
 			</section>
 			{selectedInvoice && (
 				<EditInvoice
-					t={t}
 					open={isOpenEditModal}
 					onCancel={onCancel}
 					onSave={onSave}
