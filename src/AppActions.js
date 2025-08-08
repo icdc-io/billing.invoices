@@ -16,15 +16,15 @@ export const fetchInvoicesData = (filterQuery) => (dispatch) => {
 	response.catch(showErrorNotification);
 };
 
-const putInvoiceAction = (invoice) => ({
+const putInvoiceAction = (id, payload) => ({
 	type: ActionTypes.INVOICE_PUT,
-	payload: updateData(ActionTypes.invoicePutUrl(invoice.id), invoice),
+	payload: updateData(ActionTypes.invoicePutUrl(id), payload),
 });
 
 export const putInvoice = (invoice, filterQuery) => (dispatch) => {
 	dispatch({ type: `${ActionTypes.INVOICE_PUT}_PENDING` });
-
-	const response = dispatch(putInvoiceAction(invoice));
+	const { id, ...rest } = invoice;
+	const response = dispatch(putInvoiceAction(id, rest));
 	response.then(() => {
 		dispatch(fetchInvoicesData(filterQuery));
 		showSuccessNotification();
