@@ -29,11 +29,14 @@ import { isInvalidDate } from "../constants/toClientTimezone";
 
 const EditInvoice = ({ open, onSave, onCancel, invoice, isSaving }) => {
 	const { t } = useTranslation();
+	const { name, due_date, status, payment_method, payment_date, id } = invoice;
 	const [invoiceData, setInvoiceData] = useState({
-		...invoice,
-		payment_date: isInvalidDate(invoice.payment_date)
-			? ""
-			: new Date(invoice.payment_date),
+		id,
+		name,
+		due_date,
+		status,
+		payment_method,
+		payment_date: isInvalidDate(payment_date) ? "" : new Date(payment_date),
 	});
 	const { role } = useSelector((state) => state.host.user);
 	const locale = useSelector((state) => state.host.lang);
