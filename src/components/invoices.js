@@ -141,32 +141,9 @@ const Invoices = ({ isPayEnable }) => {
 		return +(Math.round(num + "e+2") + "e-2");
 	};
 
-	const setCurrency = (currency, amount) => {
+	const setCurrency = (amount) => {
 		const roundedAmount = roundToTwo(amount);
-		switch (currency.toUpperCase()) {
-			case "USD":
-				return <span>&#36; {roundedAmount}</span>;
-			case "RUB":
-				return <span>&#8381; {roundedAmount}</span>;
-			case "PLN":
-				return <span>&#x142; {roundedAmount}</span>;
-			case "EUR":
-				return <span>&#8364; {roundedAmount}</span>;
-			case "BGN":
-				return <span>&#8364; {roundedAmount}</span>;
-			case "GBP":
-				return <span>&#163; {roundedAmount}</span>;
-			case "UAH":
-				return <span>&#8372; {roundedAmount}</span>;
-			case "CZK":
-				return <span>K&#x10D; {roundedAmount}</span>;
-			default:
-				return (
-					<span>
-						{roundedAmount} {currency.toUpperCase()}
-					</span>
-				);
-		}
+		return roundedAmount;
 	};
 
 	const onCancel = () => {
@@ -261,7 +238,7 @@ const Invoices = ({ isPayEnable }) => {
 				<p className="titleTable">{t("paymentDate")}</p>
 			</TableCell>
 			<TableCell>
-				<p>{setCurrency(invoice.currency, invoice.amount)}</p>
+				<p>{setCurrency(invoice.amount)}</p>
 				<p className="titleTable">{t("total")}</p>
 			</TableCell>
 			<TableCell>
