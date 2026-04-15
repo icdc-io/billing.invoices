@@ -1,9 +1,7 @@
 import Immutable from "seamless-immutable";
-/* eslint camelcase: 0 */
 import * as ActionTypes from "./AppConstants";
 import { withClientTimezone } from "./constants/toClientTimezone";
 
-// eslint-disable-next-line new-cap
 const initialState = Immutable({
 	invoices: [],
 	invoicesTotalCount: 0,
