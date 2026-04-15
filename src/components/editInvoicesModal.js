@@ -7,12 +7,13 @@ import {
 	DialogTitle,
 } from "container/Modal";
 import PropTypes from "prop-types";
-import React, { useState } from "react";
+import { useState } from "react";
 import { PaymentStatuses } from "./enumeration";
 import "react-datepicker/dist/react-datepicker.css";
 import { Button } from "container/Button";
 import { Input } from "container/Input";
 import { Label } from "container/Label";
+import { isAdminRights } from "container/roleUtils";
 import {
 	Select,
 	SelectContent,
@@ -20,7 +21,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "container/Select";
-import { isAdminRights } from "container/roleUtils";
 import { X } from "lucide-react";
 import DatePicker from "react-datepicker";
 import { useTranslation } from "react-i18next";
