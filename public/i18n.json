@@ -1,0 +1,52 @@
+{
+	"en": {
+		"translation": {
+			"all": "All Invoices",
+			"draft": "Draft",
+			"draftInvoices": "Draft Invoices",
+			"dueTo": "Due To",
+			"editInvoice": "Edit Invoice",
+			"invoices": "Invoices",
+			"invoiceId": "Invoice ID",
+			"label": "Title",
+			"noSearchResults": "No matching search results.",
+			"notSelected": "Not selected",
+			"paid": "Paid",
+			"paidInvoices": "Paid Invoices",
+			"paymentDate": "Payment Date",
+			"paymentMethod": "Payment Method",
+			"payNow": "Pay Now",
+			"postDue": "Post Due",
+			"postDueInvoices": "Post due Invoices",
+			"searchField": "Search...",
+			"total": "Total",
+			"unpaid": "Unpaid",
+			"unPaidInvoices": "Unpaid Invoices"
+		}
+	},
+	"ru": {
+		"translation": {
+			"all": "Все счета",
+			"draft": "Черновик",
+			"draftInvoices": "Черновики счетов",
+			"dueTo": "Срок оплаты",
+			"editInvoice": "Изменить счет",
+			"invoices": "Счета",
+			"invoiceId": "ID счёта",
+			"label": "Заголовок",
+			"noSearchResults": "Нет результатов.",
+			"notSelected": "Не выбрано",
+			"paid": "Оплачено",
+			"paidInvoices": "Оплаченные счета",
+			"paymentDate": "Дата платежа",
+			"paymentMethod": "Метод оплаты",
+			"payNow": "Оплатить сейчас",
+			"postDue": "Просрочено",
+			"postDueInvoices": "Просроченные счета",
+			"searchField": "Поиск...",
+			"total": "Сумма",
+			"unpaid": "Не оплачено",
+			"unPaidInvoices": "Неоплаченные счета"
+		}
+	}
+}
